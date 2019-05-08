@@ -16,7 +16,7 @@ public class UserDTO implements Serializable, IUserDTO {
     }
 
     @Override
-    public int getUserId() {
+    public int getEmployeeID() {
         return userId;
     }
     @Override
@@ -24,7 +24,7 @@ public class UserDTO implements Serializable, IUserDTO {
         this.userId = userId;
     }
     @Override
-    public String getUserName() {
+    public String getEmployeeName() {
         return userName;
     }
     @Override

@@ -16,7 +16,7 @@ public interface IUserDAO {
     //Update
     void updateUser(IUserDTO user) throws DALException;
     //Delete
-    void deleteUser(int userId) throws DALException;
+    boolean deleteUser(int userId, IUserDTO admin) throws DALException;
 
     public class DALException extends Exception {
         //Til Java serialisering...

@@ -3,11 +3,11 @@ package dto;
 import java.util.List;
 
 public interface IUserDTO {
-    int getUserId();
+    int getEmployeeID();
 
     void setUserId(int userId);
 
-    String getUserName();
+    String getEmployeeName();
 
     void setUserName(String userName);
 
