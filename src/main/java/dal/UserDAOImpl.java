@@ -9,6 +9,8 @@ import java.util.List;
 
 public class UserDAOImpl implements IUserDAO {
 
+    public String[] roller = {"Farmaceut", "Produktionsleder", "Laborant", "Administrator"};
+
     private Connection createConnection() throws DALException {
         try {
             return DriverManager.getConnection("jdbc:mysql://ec2-52-30-211-3.eu-west-1.compute.amazonaws.com/s185092?"
@@ -100,25 +102,19 @@ public class UserDAOImpl implements IUserDAO {
         }
     }
 
-    //virker ikke; skal måske være en counter
-    private boolean checkRoles(List<String> roles) {
-        for(enumRoles role: enumRoles.values()) {
-            for(String role2: roles) {
-                if(role2.equals(role.toString())) {
-                    return false;
+
+    @Override
+    public boolean checkRoles(List<String> rolesToCheck) {
+        int counter = 0;
+        for(String roleToBe: roller) {
+            for(String role: rolesToCheck) {
+                if(roleToBe.equals(role)) {
+                    counter++;
                 }
             }
         }
-        return true;
-    }
-
-    private boolean hej(List<String> roles) {
-        for(String role: roles) {
-            switch (role) {
-
-            }
-        }
-        return false;
+        //check if eath role is a role you can actually be
+        return counter == rolesToCheck.size();
     }
 
 
@@ -180,14 +176,7 @@ public class UserDAOImpl implements IUserDAO {
         hej.add("Farmaceut");
         hej.add("Laborant");
 
-
         System.out.println(((UserDAOImpl) userDAO).checkRoles(hej));
     }
 }
 
-enum enumRoles {
-    Farmaceut,
-    Produktionsleder,
-    Laborant,
-    Administrator
-}

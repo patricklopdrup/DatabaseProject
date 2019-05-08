@@ -18,6 +18,9 @@ public interface IUserDAO {
     //Delete
     boolean deleteUser(int userId, IUserDTO admin) throws DALException;
 
+
+    boolean checkRoles(List<String> rolesToCheck);
+
     public class DALException extends Exception {
         //Til Java serialisering...
         private static final long serialVersionUID = 7355418246336739229L;

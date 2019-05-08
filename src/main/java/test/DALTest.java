@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 
@@ -88,5 +89,44 @@ public class DALTest {
             fail();
         }
     }
+
+
+    @Test
+    public void checkRolesTest() {
+        try {
+            UserDTO testUser = new UserDTO();
+            testUser.setUserId(131);
+            testUser.setUserName("Jeg Tester");
+            testUser.setIni("JT");
+
+            List<String> testRoles = new ArrayList<>();
+            testRoles.add("Farmaceut");
+            testRoles.add("Administrator");
+            testRoles.add("fail");
+            testUser.setRoles(testRoles);
+            userDAO.createUser(testUser);
+
+            //test passes if false; should be because role:"fail"
+            assertFalse(userDAO.checkRoles(testUser.getRoles()));
+
+            //create an Administrator
+            UserDTO admin = new UserDTO();
+            admin.setUserId(1);
+            admin.setUserName("Admin Administrator");
+            admin.setIni("AA");
+            List<String> adminRole = new ArrayList<>();
+            adminRole.add("Administrator");
+            admin.setRoles(adminRole);
+
+            //deleting user again
+            userDAO.deleteUser(testUser.getEmployeeID(), admin);
+
+
+        } catch (IUserDAO.DALException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+
 
 }
