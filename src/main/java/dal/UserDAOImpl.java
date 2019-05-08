@@ -61,7 +61,7 @@ public class UserDAOImpl implements IUserDAO {
             while(resultSet.next()) {
                 st = c.createStatement();
                 int employeeID = resultSet.getInt("employeeID");
-                ResultSet roleSet = st.executeQuery("select * from roles where employeeID = " + employeeID);
+                ResultSet roleSet = st.executeQuery("select * from roles where roleID = " + employeeID);
                 IUserDTO user = new UserDTO();
                 user.setUserId(resultSet.getInt("employeeID"));
                 user.setUserName(resultSet.getString("employeeName"));
@@ -89,7 +89,7 @@ public class UserDAOImpl implements IUserDAO {
             prest.executeUpdate();
 
             for(String role: user.getRoles()) {
-                PreparedStatement roleSt = c.prepareStatement("insert into roles values(?,?)");
+                PreparedStatement roleSt = c.prepareStatement("insert into roles(roleID, roleName) values(?,?)");
                 roleSt.setInt(1, user.getEmployeeID());
                 roleSt.setString(2, role);
                 roleSt.executeUpdate();
@@ -117,12 +117,12 @@ public class UserDAOImpl implements IUserDAO {
     public void updateUser(IUserDTO user) throws DALException {
         try (Connection c = createConnection()) {
             //delete every role
-            PreparedStatement prest = c.prepareStatement("delete from roles where user_id = ?");
+            PreparedStatement prest = c.prepareStatement("delete from roles where roleID = ?");
             prest.setInt(1, user.getEmployeeID());
             prest.executeUpdate();
 
             //update database
-            PreparedStatement values = c.prepareStatement("update employee set employeeName = ?, ini = ? where employeeID = ?");
+            PreparedStatement values = c.prepareStatement("update employee set employeeName = ?, employeeIni = ? where employeeID = ?");
             values.setString(1, user.getEmployeeName());
             values.setString(2, user.getIni());
             values.setInt(3, user.getEmployeeID());
@@ -130,7 +130,7 @@ public class UserDAOImpl implements IUserDAO {
 
             //update roles
             for(String role: user.getRoles()) {
-                PreparedStatement roleSt = c.prepareStatement("insert into roles values(?,?)");
+                PreparedStatement roleSt = c.prepareStatement("insert into roles(roleID, roleName) values(?,?)");
                 roleSt.setInt(1, user.getEmployeeID());
                 roleSt.setString(2, role);
                 roleSt.executeUpdate();
@@ -145,7 +145,7 @@ public class UserDAOImpl implements IUserDAO {
         try (Connection c = createConnection()) {
 
             for(String role: admin.getRoles()) {
-                if(role.equalsIgnoreCase("admin")) {
+                if(role.equalsIgnoreCase("Administrator")) {
                     PreparedStatement prest = c.prepareStatement("delete from employee where employeeID = ?");
                     prest.setInt(1, employeeID);
                     prest.executeUpdate();
