@@ -112,6 +112,15 @@ public class UserDAOImpl implements IUserDAO {
         return true;
     }
 
+    private boolean hej(List<String> roles) {
+        for(String role: roles) {
+            switch (role) {
+
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public void updateUser(IUserDTO user) throws DALException {
@@ -145,7 +154,7 @@ public class UserDAOImpl implements IUserDAO {
         try (Connection c = createConnection()) {
 
             for(String role: admin.getRoles()) {
-                if(role.equalsIgnoreCase("Administrator")) {
+                if(role.equals("Administrator")) {
                     PreparedStatement prest = c.prepareStatement("delete from employee where employeeID = ?");
                     prest.setInt(1, employeeID);
                     prest.executeUpdate();
