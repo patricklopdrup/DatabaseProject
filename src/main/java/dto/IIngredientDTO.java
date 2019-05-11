@@ -1,15 +1,20 @@
 package dto;
 
 public interface IIngredientDTO {
+    void setIngredientID(int ID);
 
+    int getIngredientID();
 
-    int getIngredientId();
+    void setIngredientName(String name);
 
     String getIngredientName();
-    void setIngredientName(String ingredientName);
 
+    void setOrderStatus(boolean status);
 
+    boolean getOrderStatus();
 
-    //måske have en boolean der hedder buyMore??
-    boolean toBuyMore();
+    void setType(boolean type);
+
+    boolean getType();
+
 }

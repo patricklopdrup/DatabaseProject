@@ -7,11 +7,19 @@ public interface IUserDTO {
 
     void setUserId(int userId);
 
-    String getEmployeeName();
+    String getUserName();
 
     void setUserName(String userName);
 
+    void setFirstName(String firstName);
+
+    void setSurname(String surname);
+
+    String getSurname();
+
     String getIni();
+
+    String getFirstName();
 
     void setIni(String ini);
 
