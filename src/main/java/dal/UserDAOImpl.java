@@ -8,175 +8,169 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAOImpl implements IUserDAO {
-
-    public String[] roller = {"Farmaceut", "Produktionsleder", "Laborant", "Administrator"};
-
-    private Connection createConnection() throws DALException {
-        try {
-            return DriverManager.getConnection("jdbc:mysql://ec2-52-30-211-3.eu-west-1.compute.amazonaws.com/s185092?"
-                    + "user=s185092&password=C7uzj8I1GztZQ40cOeE7f");
-        } catch (SQLException e) {
-            throw new DALException(e.getMessage());
-        }
-    }
-
     @Override
-    public IUserDTO getUser(int employeeID) throws DALException {
-        try (Connection c = createConnection()){
-            PreparedStatement prest = c.prepareStatement("select * from employee where employeeID = ?");
-            prest.setInt(1, employeeID);
+    public IUserDTO getUser(String userName) throws MySQL_conn.DALException {
+        try {
+            Connection c = MySQL_conn.getConnection();
+            PreparedStatement prest = c.prepareStatement("select * from employee where userName = ?");
+            prest.setString(1, userName);
             ResultSet resultSet = prest.executeQuery();
+            if (!resultSet.next()) return new UserDTO();
 
-            PreparedStatement role = c.prepareStatement("select * from roles where roleID = ?");
-            role.setInt(1, employeeID);
+            PreparedStatement role = c.prepareStatement("SELECT roles.Name FROM roles JOIN employee_roles ON roles.ID = employee_roles.roleID WHERE employee_roles.employeeID = ?");
+            role.setInt(1, resultSet.getInt("ID"));
             ResultSet roleSet = role.executeQuery();
-            //makeing user from resultSet
             IUserDTO user = new UserDTO();
-            while(resultSet.next()) {
-                user.setUserId(resultSet.getInt("employeeID"));
-                user.setUserName(resultSet.getString("employeeName"));
-                user.setIni(resultSet.getString("employeeIni"));
-            }
+
+            user.setUserId(resultSet.getInt("ID"));
+            user.setUserName(resultSet.getString("Username"));
+            user.setFirstName(resultSet.getString("FirstName"));
+            user.setSurname(resultSet.getString("Surname"));
+            user.setIni(resultSet.getString("Initials"));
+
             while (roleSet.next()) {
-                user.addRole(roleSet.getString("roleName"));
+                user.addRole(roleSet.getString("Name"));
             }
             return user;
         } catch (SQLException e) {
-            throw new DALException(e.getMessage());
+            throw new MySQL_conn.DALException(e.getMessage());
         }
     }
 
     @Override
-    public IUserDTO getUserByIni(String initials) throws DALException {
-        //TODO Implement this - Should retrieve a user from db and parse it to a UserDTO
-        return null;
-    }
-
-
-    @Override
-    public List<IUserDTO> getUserList() throws DALException {
-        try (Connection c = createConnection()) {
+    public List<IUserDTO> getUserList() throws MySQL_conn.DALException {
+        try {
+            Connection c = MySQL_conn.getConnection();
             List<IUserDTO> users = new ArrayList<>();
             Statement st = c.createStatement();
             ResultSet resultSet = st.executeQuery("select * from employee");
 
             while(resultSet.next()) {
                 st = c.createStatement();
-                int employeeID = resultSet.getInt("employeeID");
-                ResultSet roleSet = st.executeQuery("select * from roles where roleID = " + employeeID);
+                int employeeID = resultSet.getInt("ID");
+                ResultSet roleSet = st.executeQuery("SELECT roles.Name FROM roles JOIN employee_roles ON roles.ID = employee_roles.roleID WHERE employee_roles.employeeID = " + employeeID);
                 IUserDTO user = new UserDTO();
-                user.setUserId(resultSet.getInt("employeeID"));
-                user.setUserName(resultSet.getString("employeeName"));
-                user.setIni(resultSet.getString("employeeIni"));
+                user.setUserId(resultSet.getInt("ID"));
+                user.setUserName(resultSet.getString("Username"));
+                user.setFirstName(resultSet.getString("FirstName"));
+                user.setSurname(resultSet.getString("Surname"));
+                user.setIni(resultSet.getString("Initials"));
 
                 while (roleSet.next()) {
-                    user.addRole(roleSet.getString("roleName"));
+                    user.addRole(roleSet.getString("Name"));
                 }
                 users.add(user);
             }
             return users;
         } catch (SQLException e) {
-            throw new DALException(e.getMessage());
+            throw new MySQL_conn.DALException(e.getMessage());
         }
     }
 
     @Override
-    public void createUser(IUserDTO user) throws DALException {
-        try (Connection c = createConnection()){
+    public void createUser(IUserDTO user, IUserDTO admin) throws MySQL_conn.DALException {
+        if (!hasRole(admin, "Administrator")) return;
+        try {
+            Connection c = MySQL_conn.getConnection();
             //employeeID, employeeName, employeeIni
-            PreparedStatement prest = c.prepareStatement("insert into employee values(?,?,?)");
-            prest.setInt(1, user.getEmployeeID());
-            prest.setString(2, user.getEmployeeName());
-            prest.setString(3, user.getIni());
+            PreparedStatement prest = c.prepareStatement("insert into employee (Username, FirstName, Surname, Initials) values(?,?,?,?)");
+            prest.setString(1, user.getUserName());
+            prest.setString(2, user.getFirstName());
+            prest.setString(3, user.getSurname());
+            prest.setString(4, user.getIni());
             prest.executeUpdate();
 
+            Statement st = c.createStatement();
+            ResultSet resultSet = st.executeQuery("select ID from employee WHERE userName = '" + user.getUserName() + "'");
+            resultSet.next();
+            user.setUserId(resultSet.getInt("ID"));
+
             for(String role: user.getRoles()) {
-                PreparedStatement roleSt = c.prepareStatement("insert into roles(roleID, roleName) values(?,?)");
+                PreparedStatement roleSt = c.prepareStatement("insert into employee_roles(employeeID, roleID) values(?,?)");
                 roleSt.setInt(1, user.getEmployeeID());
-                roleSt.setString(2, role);
+                roleSt.setInt(2, getRoleID(role));
                 roleSt.executeUpdate();
             }
 
         } catch (SQLException e) {
-            throw new DALException(e.getMessage());
+            throw new MySQL_conn.DALException(e.getMessage());
         }
     }
 
-
     @Override
-    public boolean checkRoles(List<String> rolesToCheck) {
-        int counter = 0;
-        for(String roleToBe: roller) {
-            for(String role: rolesToCheck) {
-                if(roleToBe.equals(role)) {
-                    counter++;
-                }
-            }
+    public int getRoleID(String role) throws MySQL_conn.DALException {
+        try {
+            Connection c = MySQL_conn.getConnection();
+            PreparedStatement roleSt = c.prepareStatement("SELECT ID FROM roles WHERE roles.Name = ?");
+            roleSt.setString(1, role);
+            ResultSet result = roleSt.executeQuery();
+            result.next();
+            return result.getInt("ID");
+        } catch (SQLException e) {
+            throw new MySQL_conn.DALException(e.getMessage());
         }
-        //check if eath role is a role you can actually be
-        return counter == rolesToCheck.size();
     }
 
+    @Override
+    public boolean hasRole(IUserDTO user, String role) throws MySQL_conn.DALException {
+        int roleID = getRoleID(role);
+        try  {
+            Connection c = MySQL_conn.getConnection();
+            PreparedStatement roleSt = c.prepareStatement("SELECT * FROM employee_roles WHERE employeeID = ? AND roleID = ?");
+            roleSt.setInt(1, user.getEmployeeID());
+            roleSt.setInt(2, roleID);
+            ResultSet result = roleSt.executeQuery();
+            return result.next();
+        } catch (SQLException e) {
+            throw new MySQL_conn.DALException(e.getMessage());
+        }
+    }
 
     @Override
-    public void updateUser(IUserDTO user) throws DALException {
-        try (Connection c = createConnection()) {
+    public void updateUser(IUserDTO user, IUserDTO admin) throws MySQL_conn.DALException {
+        if (!hasRole(admin, "Administrator")) return;
+        if (user.getUserName() == "admin") return;
+        try {
+            Connection c = MySQL_conn.getConnection();
             //delete every role
-            PreparedStatement prest = c.prepareStatement("delete from roles where roleID = ?");
+            PreparedStatement prest = c.prepareStatement("delete from employee_roles where employeeID = ?");
             prest.setInt(1, user.getEmployeeID());
             prest.executeUpdate();
 
             //update database
-            PreparedStatement values = c.prepareStatement("update employee set employeeName = ?, employeeIni = ? where employeeID = ?");
-            values.setString(1, user.getEmployeeName());
-            values.setString(2, user.getIni());
-            values.setInt(3, user.getEmployeeID());
+            PreparedStatement values = c.prepareStatement("UPDATE employee SET Username = ?, FirstName = ?, Surname = ?, Initials = ? WHERE ID = ?");
+            values.setString(1, user.getUserName());
+            values.setString(2, user.getFirstName());
+            values.setString(3, user.getSurname());
+            values.setString(4, user.getIni());
+            values.setInt(5, user.getEmployeeID());
             values.executeUpdate();
 
             //update roles
             for(String role: user.getRoles()) {
-                PreparedStatement roleSt = c.prepareStatement("insert into roles(roleID, roleName) values(?,?)");
+                PreparedStatement roleSt = c.prepareStatement("insert into employee_roles(employeeID, roleID) values(?,?)");
                 roleSt.setInt(1, user.getEmployeeID());
-                roleSt.setString(2, role);
+                roleSt.setInt(2, getRoleID(role));
                 roleSt.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DALException(e.getMessage());
+            throw new MySQL_conn.DALException(e.getMessage());
         }
     }
 
     @Override
-    public boolean deleteUser(int employeeID, IUserDTO admin) throws DALException {
-        try (Connection c = createConnection()) {
-
-            for(String role: admin.getRoles()) {
-                if(role.equals("Administrator")) {
-                    PreparedStatement prest = c.prepareStatement("delete from employee where employeeID = ?");
-                    prest.setInt(1, employeeID);
-                    prest.executeUpdate();
-                    return true;
-                }
-            }
+    public boolean deleteUser(String userName, IUserDTO admin) throws MySQL_conn.DALException {
+        if (!hasRole(admin, "Administrator")) return false;
+        if (userName.equals("admin")) return false;
+        try  {
+            Connection c = MySQL_conn.getConnection();
+            PreparedStatement prest = c.prepareStatement("delete from employee where Username = ?");
+            prest.setString(1, userName);
+            prest.executeUpdate();
+            return true;
         } catch (SQLException e) {
-            throw new DALException(e.getMessage());
+            throw new MySQL_conn.DALException(e.getMessage());
         }
-        return false;
-    }
-
-
-    public static void main(String[] args) throws DALException {
-        IUserDAO userDAO = new UserDAOImpl();
-        IUserDTO user = userDAO.getUser(1);
-
-        System.out.println(user.getRoles());
-
-        System.out.println(userDAO.deleteUser(3, user));
-
-        List<String> hej = new ArrayList<>();
-        hej.add("Farmaceut");
-        hej.add("Laborant");
-
-        System.out.println(((UserDAOImpl) userDAO).checkRoles(hej));
     }
 }
 

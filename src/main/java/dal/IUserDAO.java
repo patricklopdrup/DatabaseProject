@@ -6,33 +6,20 @@ import java.util.List;
 
 public interface IUserDAO {
     //Create
-    void createUser(IUserDTO user) throws DALException;
+    void createUser(IUserDTO user, IUserDTO admin) throws MySQL_conn.DALException;
     //Read
-    IUserDTO getUser(int userId) throws DALException;
 
-    IUserDTO getUserByIni(String initials) throws DALException;
+    IUserDTO getUser(String userName) throws MySQL_conn.DALException;
 
-    List<IUserDTO> getUserList() throws DALException;
+    List<IUserDTO> getUserList() throws MySQL_conn.DALException;
     //Update
-    void updateUser(IUserDTO user) throws DALException;
+    void updateUser(IUserDTO user, IUserDTO admin) throws MySQL_conn.DALException;
     //Delete
-    boolean deleteUser(int userId, IUserDTO admin) throws DALException;
+    boolean deleteUser(String userName, IUserDTO admin) throws MySQL_conn.DALException;
 
 
-    boolean checkRoles(List<String> rolesToCheck);
+    int getRoleID(String role) throws MySQL_conn.DALException;
 
-    public class DALException extends Exception {
-        //Til Java serialisering...
-        private static final long serialVersionUID = 7355418246336739229L;
-
-        public DALException(String msg, Throwable e) {
-            super(msg,e);
-        }
-
-        public DALException(String msg) {
-            super(msg);
-        }
-
-    }
+    boolean hasRole(IUserDTO user, String role) throws MySQL_conn.DALException;
 
 }
