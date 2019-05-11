@@ -8,6 +8,8 @@ public class UserDTO implements Serializable, IUserDTO {
 
     private int	userId;
     private String userName;
+    private String firstName;
+    private String surName;
     private String ini;
     private List<String> roles;
 
@@ -23,14 +25,22 @@ public class UserDTO implements Serializable, IUserDTO {
     public void setUserId(int userId) {
         this.userId = userId;
     }
-    @Override
-    public String getEmployeeName() {
-        return userName;
-    }
+
     @Override
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
+    @Override
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Override
+    public void setSurname(String surname) {
+        this.surName = surname;
+    }
+
     @Override
     public String getIni() {
         return ini;
@@ -69,5 +79,15 @@ public class UserDTO implements Serializable, IUserDTO {
     }
 
 
+    public String getUserName() {
+        return userName;
+    }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getSurname() {
+        return surName;
+    }
 }
