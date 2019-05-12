@@ -15,10 +15,10 @@ public interface IRecipeDTO {
 
     void setRecipeName(String Name);
 
-    void addIngredient(IngredientDTO ingredient, int amount);
+    void addIngredient(IIngredientDTO ingredient, double weight);
 
-    void removeIngredient(IngredientDTO ingredient);
+    void removeIngredient(IIngredientDTO ingredient);
 
-    List<IngredientDTO> getIngredients();
+    List<IIngredientDTO> getIngredients();
 
 }

@@ -8,7 +8,7 @@ public class RecipeDTO implements IRecipeDTO {
     private int ID;
     private String name;
     private int batchSize;
-    private List<IngredientDTO> ingredients = new ArrayList<>();
+    private List<IIngredientDTO> ingredients = new ArrayList<>();
 
     @Override
     public int getRecipeID() {
@@ -41,18 +41,18 @@ public class RecipeDTO implements IRecipeDTO {
     }
 
     @Override
-    public void addIngredient(IngredientDTO ingredient, int amount) {
-        ingredient.setAmount(amount);
+    public void addIngredient(IIngredientDTO ingredient, double weight) {
+        ingredient.setAmount(weight);
         if (!ingredients.contains(ingredient)) ingredients.add(ingredient);
     }
 
     @Override
-    public void removeIngredient(IngredientDTO ingredient) {
+    public void removeIngredient(IIngredientDTO ingredient) {
         ingredients.remove(ingredient);
     }
 
     @Override
-    public List<IngredientDTO> getIngredients() {
+    public List<IIngredientDTO> getIngredients() {
         return ingredients;
     }
 }

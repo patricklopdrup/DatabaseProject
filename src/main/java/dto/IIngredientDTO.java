@@ -17,8 +17,8 @@ public interface IIngredientDTO {
 
     boolean getType();
 
-    void setAmount(int amount);
+    void setAmount(double weight);
 
-    int getAmount();
+    double getAmount();
 
 }

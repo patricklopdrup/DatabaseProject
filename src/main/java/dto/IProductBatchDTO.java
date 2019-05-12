@@ -20,11 +20,11 @@ public interface IProductBatchDTO {
 
     Timestamp getTime();
 
-    //TODO Add commodity batch DTO when created
-    void addCommodityBatch(CommodityBatchDTO commodity);
 
-    //TODO Add commodity batch DTO when created
-    void removeCommodityBatch(CommodityBatchDTO commodity);
+    void addCommodityBatch(ICommodityBatchDTO commodity);
+
+
+    void removeCommodityBatch(ICommodityBatchDTO commodity);
 
     List<ICommodityBatchDTO> getCommodityBatches();
 }

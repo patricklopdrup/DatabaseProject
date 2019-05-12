@@ -6,6 +6,7 @@ import dto.IUserDTO;
 import dto.IngredientDTO;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,10 +18,10 @@ public class IngredientTest {
     IIngredientDAO ingredientDAO = new IngredientDAOImpl();
 
     String[][] ingredientInfo = new String[][]{
-            {"Sildenafil", "1"},
-            {"Estradiol", "0"},
-            {"Calciumhydrogenphosphat", "0"},
-            {"Magnesiumstearat", "0"}
+            {"Banana", "1"},
+            {"Apple", "0"},
+            {"Orange", "0"},
+            {"Kiwi", "0"}
     };
 
 
@@ -56,8 +57,8 @@ public class IngredientTest {
                 if(ingredientDAO.getIngredient(ingredientInfo[i][0]) != null) fail();
 
             }
-
-        } catch (MySQL_conn.DALException e) {
+            MySQL_conn.getConnection().close();
+        } catch (MySQL_conn.DALException | SQLException e) {
             e.printStackTrace();
             fail();
         }

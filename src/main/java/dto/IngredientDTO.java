@@ -5,7 +5,7 @@ public class IngredientDTO implements IIngredientDTO {
     private String ingredientName;
     private boolean status;
     private boolean type;
-    private int amount;
+    private double amount;
 
     @Override
     public void setIngredientID(int ID) {
@@ -48,12 +48,12 @@ public class IngredientDTO implements IIngredientDTO {
     }
 
     @Override
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
     @Override
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 }

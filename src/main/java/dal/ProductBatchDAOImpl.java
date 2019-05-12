@@ -19,7 +19,7 @@ public class ProductBatchDAOImpl implements IProductBatchDAO{
     public void createProductBatch(IProductBatchDTO product, IUserDTO user) throws MySQL_conn.DALException {
         UserDAOImpl testUser = new UserDAOImpl();
 
-        if(!testUser.hasRole(user,"Project Manager")) return;
+        if(!testUser.hasRole(user,"Production Manager")) return;
         try{
             Connection c = MySQL_conn.getConnection();
             PreparedStatement prepst = c.prepareStatement("INSERT into productBatch(ID, Amount) values (?,?)");
@@ -35,7 +35,7 @@ public class ProductBatchDAOImpl implements IProductBatchDAO{
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MySQL_conn.DALException(e.getMessage());
         }
     }
 
@@ -74,10 +74,10 @@ public class ProductBatchDAOImpl implements IProductBatchDAO{
 
             return productBatchDTO;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MySQL_conn.DALException(e.getMessage());
         }
-
     }
+
 
     @Override
     public List<IProductBatchDTO> getProductBatches() throws MySQL_conn.DALException {
@@ -85,8 +85,9 @@ public class ProductBatchDAOImpl implements IProductBatchDAO{
             Connection c = MySQL_conn.getConnection();
             PreparedStatement prepst = c.prepareStatement("SELECT * FROM productBatch");
             ResultSet productBatchResult = prepst.executeQuery();
+
             List<IProductBatchDTO> productBatchDTOList = new ArrayList<>();
-            while(!productBatchResult.next()){
+            while(productBatchResult.next()){
                 IProductBatchDTO productBatchDTO = new ProductBatchDTO();
 
                 productBatchDTO.setBatchID(productBatchResult.getInt("ID"));
@@ -113,14 +114,22 @@ public class ProductBatchDAOImpl implements IProductBatchDAO{
                 productBatchDTOList.add(productBatchDTO);
             }
             return productBatchDTOList;
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MySQL_conn.DALException(e.getMessage());
         }
     }
 
     @Override
     public void deleteProductBatch(int productID, IUserDTO admin) throws MySQL_conn.DALException {
-
+        UserDAOImpl test = new UserDAOImpl();
+        if (!test.hasRole(admin, "Production Manager")) return;
+        try {
+            Connection c = MySQL_conn.getConnection();
+            PreparedStatement prest = c.prepareStatement("delete from productBatch where ID = ?");
+            prest.setInt(1, productID);
+            prest.executeUpdate();
+        } catch (SQLException e) {
+            throw new MySQL_conn.DALException(e.getMessage());
+        }
     }
 }

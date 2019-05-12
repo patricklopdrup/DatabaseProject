@@ -11,11 +11,7 @@ public class UserDTO implements Serializable, IUserDTO {
     private String firstName;
     private String surName;
     private String ini;
-    private List<String> roles;
-
-    public UserDTO() {
-        this.roles = new ArrayList<>();
-    }
+    private List<String> roles = new ArrayList<>();
 
     @Override
     public int getEmployeeID() {

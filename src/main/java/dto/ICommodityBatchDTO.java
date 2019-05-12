@@ -20,7 +20,7 @@ public interface ICommodityBatchDTO {
 
     int getRemainder();
 
-    List<IIngredientDTO> getIngredientList();
+    void setIngredient(IIngredientDTO ingredient);
 
-    void addIngredientToList(IIngredientDTO ingredient);
+    IIngredientDTO getIngredient();
 }

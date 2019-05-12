@@ -14,11 +14,12 @@ public class RecipeDAOImpl implements IRecipeDAO {
     @Override
     public void createRecipe(IRecipeDTO Recipe, IUserDTO user) throws MySQL_conn.DALException {
         UserDAOImpl test = new UserDAOImpl();
-        if (!test.hasRole(user, "Lab Technician")) return;
+        if (!test.hasRole(user, "Pharmacist")) return;
         try {
             Connection c = MySQL_conn.getConnection();
-            PreparedStatement prest = c.prepareStatement("insert into recipe (Name) values(?)");
+            PreparedStatement prest = c.prepareStatement("insert into recipe (Name, batchSize) values(?, ?)");
             prest.setString(1, Recipe.getRecipeName());
+            prest.setInt(2, Recipe.getRecipeBatchSize());
             prest.executeUpdate();
 
             prest = c.prepareStatement("SELECT ID FROM recipe WHERE Name = ?");
@@ -30,7 +31,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
                 prest = c.prepareStatement("insert into recipe_ingredients (recipeID, ingredientID, amount) values(?, ?, ?)");
                 prest.setInt(1, resultSet.getInt("ID"));
                 prest.setInt(2,ingredient.getIngredientID());
-                prest.setInt(3, ingredient.getAmount());
+                prest.setDouble(3, ingredient.getAmount());
                 prest.executeUpdate();
             }
         } catch (SQLException e) {
@@ -53,7 +54,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
             recipe.setRecipeName(resultSet.getString("Name"));
             recipe.setRecipeBatchSize(resultSet.getInt("batchSize"));
 
-            prest = c.prepareStatement("SELECT ID, Name, ShouldOrder, Type, Amount FROM ingredients JOIN recipe_ingredients ON ingredientID = ingredients.ID WHERE recipeID = ?;");
+            prest = c.prepareStatement("SELECT ID, Name, ShouldOrder, Type, amount FROM ingredients JOIN recipe_ingredients ON ingredientID = ingredients.ID WHERE recipeID = ?;");
             prest.setInt(1, RecipeID);
             resultSet = prest.executeQuery();
 
@@ -63,7 +64,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
                 ingredient.setIngredientName(resultSet.getString("Name"));
                 ingredient.setOrderStatus(resultSet.getBoolean("ShouldOrder"));
                 ingredient.setType(resultSet.getBoolean("Type"));
-                recipe.addIngredient(ingredient,resultSet.getInt("Amount"));
+                recipe.addIngredient(ingredient,resultSet.getDouble("Amount"));
             }
 
             return recipe;
@@ -86,7 +87,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
             recipe.setRecipeName(resultSet.getString("Name"));
             recipe.setRecipeBatchSize(resultSet.getInt("batchSize"));
 
-            prest = c.prepareStatement("SELECT ID, Name, ShouldOrder, Type, Amount FROM ingredients JOIN recipe_ingredients ON ingredientID = ingredients.ID WHERE recipeID = ?;");
+            prest = c.prepareStatement("SELECT ID, Name, ShouldOrder, Type, amount FROM ingredients JOIN recipe_ingredients ON ingredientID = ingredients.ID WHERE recipeID = ?;");
             prest.setInt(1, resultSet.getInt("ID"));
             resultSet = prest.executeQuery();
 
@@ -96,7 +97,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
                 ingredient.setIngredientName(resultSet.getString("Name"));
                 ingredient.setOrderStatus(resultSet.getBoolean("ShouldOrder"));
                 ingredient.setType(resultSet.getBoolean("Type"));
-                recipe.addIngredient(ingredient,resultSet.getInt("Amount"));
+                recipe.addIngredient(ingredient,resultSet.getDouble("Amount"));
             }
 
             return recipe;
@@ -119,7 +120,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
                 recipe.setRecipeName(resultSet.getString("Name"));
                 recipe.setRecipeBatchSize(resultSet.getInt("batchSize"));
 
-                prest = c.prepareStatement("SELECT ID, Name, ShouldOrder, Type, Amount FROM ingredients JOIN recipe_ingredients ON ingredientID = ingredients.ID WHERE recipeID = ?;");
+                prest = c.prepareStatement("SELECT ID, Name, ShouldOrder, Type, amount FROM ingredients JOIN recipe_ingredients ON ingredientID = ingredients.ID WHERE recipeID = ?;");
                 prest.setInt(1, resultSet.getInt("ID"));
                 resultSet = prest.executeQuery();
 
@@ -129,7 +130,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
                     ingredient.setIngredientName(resultSet.getString("Name"));
                     ingredient.setOrderStatus(resultSet.getBoolean("ShouldOrder"));
                     ingredient.setType(resultSet.getBoolean("Type"));
-                    recipe.addIngredient(ingredient,resultSet.getInt("Amount"));
+                    recipe.addIngredient(ingredient,resultSet.getDouble("Amount"));
                 }
                 recipes.add(recipe);
             }
@@ -142,7 +143,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
     @Override
     public void updateRecipe(IRecipeDTO Recipe, IUserDTO user) throws MySQL_conn.DALException {
         UserDAOImpl test = new UserDAOImpl();
-        if (!test.hasRole(user, "Lab Technician")) return;
+        if (!test.hasRole(user, "Pharmacist")) return;
         try {
             Connection c = MySQL_conn.getConnection();
             PreparedStatement prest = c.prepareStatement("UPDATE recipe SET Name = ?, batchSize = ? WHERE id = ?");
@@ -159,7 +160,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
                 prest = c.prepareStatement("insert into recipe_ingredients (recipeID, ingredientID, amount) values(?, ?, ?)");
                 prest.setInt(1, Recipe.getRecipeID());
                 prest.setInt(2, ingredient.getIngredientID());
-                prest.setInt(3, ingredient.getAmount());
+                prest.setDouble(3, ingredient.getAmount());
                 prest.executeUpdate();
             }
         } catch (SQLException e) {
@@ -170,7 +171,7 @@ public class RecipeDAOImpl implements IRecipeDAO {
     @Override
     public void deleteRecipe(int RecipeID, IUserDTO user) throws MySQL_conn.DALException {
         UserDAOImpl test = new UserDAOImpl();
-        if (!test.hasRole(user, "Lab Technician")) return;
+        if (!test.hasRole(user, "Pharmacist")) return;
         try {
             Connection c = MySQL_conn.getConnection();
             PreparedStatement prest = c.prepareStatement("delete from recipe where ID = ?");

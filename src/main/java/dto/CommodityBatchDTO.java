@@ -8,7 +8,7 @@ public class CommodityBatchDTO implements ICommodityBatchDTO {
     private int amount;
     private String manufacturer;
     private int remainder;
-    private List<IIngredientDTO> ingredientList = new ArrayList<>();
+    private IIngredientDTO ingredient;
 
     @Override
     public void setBatchID(int ID) {
@@ -51,13 +51,14 @@ public class CommodityBatchDTO implements ICommodityBatchDTO {
     }
 
     @Override
-    public List<IIngredientDTO> getIngredientList() {
-        return ingredientList;
+    public void setIngredient(IIngredientDTO ingredient) {
+        this.ingredient = ingredient;
     }
 
     @Override
-    public void addIngredientToList(IIngredientDTO ingredient) {
-        ingredientList.add(ingredient);
+    public IIngredientDTO getIngredient() {
+        return ingredient;
     }
+
 
 }

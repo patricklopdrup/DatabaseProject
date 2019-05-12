@@ -30,12 +30,12 @@ public class ProductBatchDTO implements IProductBatchDTO {
     public IRecipeDTO getRecipe() { return recipe; }
 
     @Override
-    public void addCommodityBatch(CommodityBatchDTO commodityBatch) {
+    public void addCommodityBatch(ICommodityBatchDTO commodityBatch) {
         commodityBatchList.add(commodityBatch);
     }
 
     @Override
-    public void removeCommodityBatch(CommodityBatchDTO commodityBatch) {
+    public void removeCommodityBatch(ICommodityBatchDTO commodityBatch) {
         commodityBatchList.remove(commodityBatch);
     }
 

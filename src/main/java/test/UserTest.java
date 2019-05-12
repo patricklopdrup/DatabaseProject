@@ -7,6 +7,7 @@ import dto.IUserDTO;
 import dto.UserDTO;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +86,8 @@ public class UserTest {
                 if(userDAO.getUser(userInfo_update[i][0][0]).getUserName() != null) fail();
 
             }
-        } catch (MySQL_conn.DALException e) {
+            MySQL_conn.getConnection().close();
+        } catch (MySQL_conn.DALException | SQLException e) {
             e.printStackTrace();
             fail();
         }
