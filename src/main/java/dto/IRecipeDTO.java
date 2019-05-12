@@ -1,5 +1,7 @@
 package dto;
 
+import java.util.List;
+
 public interface IRecipeDTO {
     int getRecipeID();
 
@@ -7,10 +9,16 @@ public interface IRecipeDTO {
 
     String getRecipeName();
 
+    void setRecipeBatchSize(int size);
+
+    int getRecipeBatchSize();
+
     void setRecipeName(String Name);
 
-    void addIngredient(IngredientDTO ingredient);
+    void addIngredient(IngredientDTO ingredient, int amount);
 
     void removeIngredient(IngredientDTO ingredient);
+
+    List<IngredientDTO> getIngredients();
 
 }
