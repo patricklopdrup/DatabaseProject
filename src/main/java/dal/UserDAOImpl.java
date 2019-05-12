@@ -129,7 +129,7 @@ public class UserDAOImpl implements IUserDAO {
     @Override
     public void updateUser(IUserDTO user, IUserDTO admin) throws MySQL_conn.DALException {
         if (!hasRole(admin, "Administrator")) return;
-        if (user.getUserName() == "admin") return;
+        if (user.getUserName().equalsIgnoreCase("admin")) return;
         try {
             Connection c = MySQL_conn.getConnection();
             //delete every role
