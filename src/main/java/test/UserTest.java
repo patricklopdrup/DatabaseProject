@@ -22,7 +22,7 @@ public class UserTest {
 
     String[][][] userInfo = new String[][][]{
             {{"GHansen", "Gert", "Hansen", "GHA"}, {"Pharmacist"}},
-            {{"FLarsen", "Frederik", "Larsen", "FLA"}, {"Project Manager", "Administrator"}}
+            {{"FLarsen", "Frederik", "Larsen", "FLA"}, {"Production Manager", "Administrator"}}
     };
 
     String[][][] userInfo_update = new String[][][]{
