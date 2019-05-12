@@ -1,21 +1,30 @@
 package dto;
+import java.sql.Timestamp;
+import java.util.List;
+import dal.ICommodityBatchDAO;
 
 public interface IProductBatchDTO {
     int getID();
 
-    void setSize(int size);
+    void setBatchID(int id);
 
-    int getSize();
+    void setBatchAmount(int size);
 
-    void setRecipeID(int ID);
+    int getBatchAmount();
 
-    int getRecipeID();
+    void setRecipe(IRecipeDTO recipe);
+
+    IRecipeDTO getRecipe();
+
+    void setTime(Timestamp time);
+
+    Timestamp getTime();
 
     //TODO Add commodity batch DTO when created
-    void addCommodityBatch();
+    void addCommodityBatch(CommodityBatchDTO commodity);
 
     //TODO Add commodity batch DTO when created
-    void removeCommodityBatch();
+    void removeCommodityBatch(CommodityBatchDTO commodity);
 
-    int[] getCommodityBatches();
+    List<ICommodityBatchDTO> getCommodityBatches();
 }

@@ -6,7 +6,8 @@ import dto.IUserDTO;
 import java.util.List;
 
 public interface IProductBatchDAO {
-    void addproductBatch(IProductBatchDTO product, IUserDTO admin) throws MySQL_conn.DALException;
+
+    void createProductBatch(IProductBatchDTO product, IUserDTO user) throws MySQL_conn.DALException;
 
     IProductBatchDTO getProductBatch(int id) throws MySQL_conn.DALException;
 
